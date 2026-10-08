@@ -3,7 +3,7 @@
 All-in-one AI-native ops platform for franchised hotels — one data layer and
 a team of AI agents running guest-issue triage, policy-checked replies, and
 loss/refund tracking. Built for the Crewbase Collective "Zero Human startup"
-hackathon (SF Tech Week).
+hackathon (SF Tech Week 2026).
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for the full design and
 [POLICY.md](POLICY.md) for the hotel policy spec the agents enforce.
