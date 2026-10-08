@@ -61,7 +61,7 @@ decisions. Everything else runs autonomously.
 
 ## Demo script (judges)
 
-1. Guest message arrives: "worms in room 109" (real log example).
+1. Guest message arrives: "mold in room 109 bathroom" (fictional demo case).
 2. Triage classifies: maintenance / critical → case opened in BAND room.
 3. Comms drafts the reply; Policy gate checks it against POLICY.md.
 4. Ledger attaches a comp; above threshold → pings the human in the room.

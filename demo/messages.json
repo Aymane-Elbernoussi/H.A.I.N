@@ -1,1 +1,38 @@
-[{"body":"There are worms in the bathroom. This is disgusting, we need someone here now.","channel":"guest-log","expected":{"category":"maintenance","policy_notes":"Health/safety issue: acknowledge + escalate to human immediately (POLICY.md rule 3). No comp amount promised in first reply (rule 2).","urgency":"critical"},"guest":"Morgan","id":"demo-1","room":"109"},{"body":"The AC has been making a loud rattling noise all night. Could someone take a look tomorrow?","channel":"guest-log","expected":{"category":"maintenance","policy_notes":"Standard maintenance request. Draft reply acknowledging + action. Comp only if guest asks and under $50 (rules 5, 8).","urgency":"medium"},"guest":"Casey","id":"demo-2","room":"214"},{"body":"We were charged twice for the minibar. Please refund the duplicate charge of $18.","channel":"guest-log","expected":{"category":"billing","policy_notes":"Billing dispute. Ledger attaches $18 refund to the case with reason (rule 8). Under $50: agent may propose, Policy gate approves (rule 5).","urgency":"medium"},"guest":"Riley","id":"demo-3","room":"305"}]
+[
+  {
+    "body": "There is mold growing around the shower tiles. This is unacceptable, we need someone here now.",
+    "channel": "guest-log",
+    "expected": {
+      "category": "maintenance",
+      "policy_notes": "Health/safety issue: acknowledge + escalate to human immediately (POLICY.md rule 3). No comp amount promised in first reply (rule 2).",
+      "urgency": "critical"
+    },
+    "guest": "Morgan",
+    "id": "demo-1",
+    "room": "109"
+  },
+  {
+    "body": "The AC has been making a loud rattling noise all night. Could someone take a look tomorrow?",
+    "channel": "guest-log",
+    "expected": {
+      "category": "maintenance",
+      "policy_notes": "Standard maintenance request. Draft reply acknowledging + action. Comp only if guest asks and under $50 (rules 5, 8).",
+      "urgency": "medium"
+    },
+    "guest": "Casey",
+    "id": "demo-2",
+    "room": "214"
+  },
+  {
+    "body": "We were charged twice for the minibar. Please refund the duplicate charge of $18.",
+    "channel": "guest-log",
+    "expected": {
+      "category": "billing",
+      "policy_notes": "Billing dispute. Ledger attaches $18 refund to the case with reason (rule 8). Under $50: agent may propose, Policy gate approves (rule 5).",
+      "urgency": "medium"
+    },
+    "guest": "Riley",
+    "id": "demo-3",
+    "room": "305"
+  }
+]

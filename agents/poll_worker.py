@@ -123,11 +123,23 @@ def gemini(prompt: str, system: str) -> str:
     req = urllib.request.Request(
         f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent?key={GEMINI_KEY}",
         data=json.dumps(body).encode(),
-        headers={"Content-Type": "application/json"},
+        headers={"Content-Type": "application/json", **UA},
     )
-    with urllib.request.urlopen(req, timeout=60) as r:
-        d = json.load(r)
-    return d["candidates"][0]["content"]["parts"][0]["text"].strip()
+    last_err = None
+    for attempt in range(5):
+        try:
+            with urllib.request.urlopen(req, timeout=60) as r:
+                d = json.load(r)
+            return d["candidates"][0]["content"]["parts"][0]["text"].strip()
+        except urllib.error.HTTPError as e:
+            last_err = e
+            if e.code in (429, 503):
+                wait = 30 * (attempt + 1)
+                print(f"  gemini throttled ({e.code}), waiting {wait}s...")
+                time.sleep(wait)
+            else:
+                raise
+    raise last_err
 
 
 def next_message(agent: dict) -> dict | None:
@@ -186,7 +198,7 @@ def main() -> None:
                     pass
             except Exception as e:
                 print(f"[{role}] poll error: {e}")
-        time.sleep(5)
+        time.sleep(10)
 
 
 if __name__ == "__main__":
