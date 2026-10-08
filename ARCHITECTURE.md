@@ -1,7 +1,5 @@
 # H.A.I.N. — All-in-one AI-native ops platform for franchised hotels
 
-Working name. Changeable.
-
 ## The problem
 
 Hilton and Marriott run unified, data-rich operating stacks. Franchised
@@ -21,36 +19,42 @@ One data layer + a team of AI agents that run daily hotel ops:
 - **Loss tracking** — the ledger aggregates refunds/comps/losses per case,
   per day, per category. Anomalies get flagged.
 
-## The agent team (Phase 1: 4 agents)
+## The agent team (4 agents, live)
 
-| Agent | Role |
-|---|---|
-| Triage | Ingests guest messages, classifies urgency (low/med/high/critical) + category (maintenance, billing, noise, service...), opens a case |
-| Comms | Drafts the guest reply in the hotel's voice, using case context |
-| Ledger | Attaches dollar amounts (refund/comp/loss) to cases, flags anomalies, builds the daily loss report |
-| Policy gate | Every outbound reply and every comp decision checked against POLICY.md before it ships |
+| Agent | Role | BAND handle |
+|---|---|---|
+| Triage | Ingests guest messages, classifies urgency + category, opens a case | `aymane.elber/h-a-i-n-triage` |
+| Comms | Drafts the guest reply in the hotel's voice, using case context | `aymane.elber/h-a-i-n-comms` |
+| Ledger | Attaches dollar amounts (refund/comp/loss) to cases, flags anomalies | `aymane.elber/h-a-i-n-ledger` |
+| Policy gate | Every outbound reply checked against POLICY.md before it ships | `aymane.elber/h-a-i-n-policy` |
 
-A human (the manager) approves critical-urgency and above-threshold comp
-decisions. Everything else runs autonomously.
+All four run on **Gemini 3.8 Flash**. A human (the manager) approves
+critical-urgency and above-threshold comp decisions. Everything else runs
+autonomously.
 
-## How the five sponsor tools fit
+## How the tools fit (as built)
 
-- **BAND** — the collaboration layer. One BAND room per case. Agents
-  @mention each other (Triage → Comms → Policy gate), post structured
-  context, and the human joins the room to approve or override. Python SDK
-  (`band-sdk`), one UUID + API key per agent.
-- **Kylon** — the workspace. Rooms hold the unified records (guest log,
-  loss ledger). Workflows trigger on new cases; 3,000+ integrations available
-  for real PMS/payment data in Phase 2.
-- **Rocket Ride** — the pipelines, as portable `.pipe` JSON:
+- **BAND** — the collaboration layer. All four agents registered via the
+  Human API, sharing one room with the human owner. Agents @mention each
+  other (Triage → Comms → Policy → human). A poll worker
+  (`agents/poll_worker.py`) drives the agents through BAND's REST API
+  (the sandbox network blocks BAND's WebSocket, so REST polling with
+  exponential backoff instead). The room is the audit trail.
+- **Gemini** — the brains. Every agent turn and every RocketRide LLM node
+  runs on Gemini. One key powers the whole system.
+- **RocketRide** — the pipelines, as portable `.pipe` JSON:
   `pipelines/guest-intake.pipe` (ingest → classify → draft → policy-check →
   approve → post) and `pipelines/loss-report.pipe` (aggregate → flag
-  anomalies → report). Submitted to Discord #showcase with the GitHub link.
-- **AdaL** — build & execute. The CLI harness scaffolds the agents, runs the
-  code, and carries changes from direction to tested PR.
-- **Prelint** — the decision layer. `POLICY.md` is the product spec. Prelint
-  reviews every PR and every agent-proposed guest reply against it:
-  "should this go out?" Approve / correct / replace.
+  anomalies → report). LLM nodes use the `llm_gemini` provider; both validate
+  and run on RocketRide Cloud.
+- **Kylon** — the team workspace. CLI authenticated to the workspace;
+  `hain-hotel-ops` room is mission control. BAND is where agents collaborate,
+  Kylon is where the human team coordinates.
+- **AdaL** — build & execute. Built the web dashboard (`dashboard/`:
+  cases feed, ledger, agent activity).
+- **Prelint** — the decision layer. Connected to this repo with docs tracked.
+  Reviews every PR against the spec files (`ARCHITECTURE.md`, `POLICY.md`,
+  `README.md`). The Policy agent gates guest replies; Prelint gates code.
 
 ## Data model
 
@@ -61,29 +65,30 @@ decisions. Everything else runs autonomously.
 
 ## Demo script (judges)
 
-1. Guest message arrives: "mold in room 109 bathroom" (fictional demo case).
-2. Triage classifies: maintenance / critical → case opened in BAND room.
+1. Guest message arrives in the BAND room (fictional demo cases in `demo/`).
+2. Triage classifies: category + urgency → case opened, @mentions Comms.
 3. Comms drafts the reply; Policy gate checks it against POLICY.md.
-4. Ledger attaches a comp; above threshold → pings the human in the room.
-5. Human approves → reply posts, ledger updates, loss report reflects it.
+4. Ledger attaches any comp/refund; above threshold → pings the human.
+5. Human approves → reply posts, ledger updates.
 
-Show the BAND room live: agents @mentioning each other, the audit trail,
-the human approval. That is the whole pitch in 90 seconds.
+34 cases processed live through this loop. Show the BAND room: agents
+@mentioning each other, Policy rejecting a bad draft, the audit trail.
+That is the whole pitch in 90 seconds.
 
 ## Repo layout
 
 ```
 README.md            pitch + setup
 ARCHITECTURE.md      this file
-POLICY.md            hotel policy spec (Prelint reads it)
+POLICY.md            hotel policy spec (Prelint reads this)
 .env.example         required keys
-agents/              BAND agent configs (triage, comms, ledger, policy)
+agents/              poll_worker.py (runs all 4 agents), band_agents.py
 pipelines/           RocketRide .pipe JSON (guest-intake, loss-report)
-demo/                sample guest messages + expected flows
+dashboard/           AdaL-built web dashboard (cases, ledger, agents)
+demo/                fictional sample guest messages
 ```
 
 ## Phase 2 direction
 
-Real PMS/payment integrations via Kylon, more than 5 agents (add Research,
-GTM, Sales per the brief), user testing with a franchised location, investor
-pitch.
+Real PMS/payment integrations, more agents (Research, GTM, Sales), user
+testing with a franchised location, investor pitch.
