@@ -2,10 +2,9 @@
 
 ## The problem
 
-Hilton and Marriott run unified, data-rich operating stacks. Franchised
-locations don't: PMS data, guest logs, and payment/refund records live in
+Hilton, Marriott and other top Hotels are starting to run unified, all in one platforms for their front line employees.Smaller hotels don't have this luxury: PMS data, guest logs, and payment/refund records live in
 separate silos. Nobody can answer "how much did we lose this week, on what,
-and why?" Refunds leak, comp decisions are inconsistent, guest issues get
+and why?" Refunds, comp decisions are inconsistent, guest issues get
 lost between channels.
 
 ## The product
