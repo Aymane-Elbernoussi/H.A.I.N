@@ -1,4 +1,4 @@
-# InnSight
+# H.A.I.N.
 
 All-in-one AI-native ops platform for franchised hotels — one data layer and
 a team of AI agents running guest-issue triage, policy-checked replies, and

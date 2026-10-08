@@ -1,4 +1,4 @@
-# InnSight — All-in-one AI-native ops platform for franchised hotels
+# H.A.I.N. — All-in-one AI-native ops platform for franchised hotels
 
 Working name. Changeable.
 
