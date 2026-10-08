@@ -1,6 +1,6 @@
 # H.A.I.N.
 
-All-in-one AI-native ops platform for franchised hotels — one data layer and
+All-in-one AI-native ops platform for boutique hotels — one data layer and
 a team of AI agents running guest-issue triage, policy-checked replies, and
 loss/refund tracking. Built for the Crewbase Collective "Zero Human startup"
 hackathon (SF Tech Week 2026).
