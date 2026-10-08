@@ -1,0 +1,253 @@
+{
+	"components": [
+		{
+			"id": "chat_1",
+			"provider": "chat",
+			"ui": {
+				"position": {
+					"x": 20,
+					"y": 200
+				},
+				"measured": {
+					"width": 150,
+					"height": 66
+				},
+				"nodeType": "default",
+				"formDataValid": true
+			},
+			"config": {
+				"hideForm": true,
+				"mode": "Source",
+				"parameters": {},
+				"type": "chat"
+			}
+		},
+		{
+			"id": "triage_agent",
+			"provider": "agent_rocketride",
+			"ui": {
+				"position": {
+					"x": 260,
+					"y": 200
+				},
+				"measured": {
+					"width": 150,
+					"height": 86
+				},
+				"nodeType": "default",
+				"formDataValid": true
+			},
+			"config": {
+				"instructions": [
+					"You are the Triage agent for InnSight, an AI-native ops platform for franchised hotels. Given a guest message, classify it and emit a case as JSON with keys: guest, room, category (maintenance/billing/noise/service/safety/other), urgency (low/medium/high/critical), summary (one line). Health/safety issues (pests, mold, alarms, lock failures) are ALWAYS critical. Pass the case JSON forward as your answer."
+				],
+				"max_waves": 10,
+				"parameters": {}
+			},
+			"input": [
+				{
+					"lane": "questions",
+					"from": "chat_1"
+				}
+			]
+		},
+		{
+			"id": "comms_agent",
+			"provider": "agent_rocketride",
+			"ui": {
+				"position": {
+					"x": 500,
+					"y": 200
+				},
+				"measured": {
+					"width": 150,
+					"height": 86
+				},
+				"nodeType": "default",
+				"formDataValid": true
+			},
+			"config": {
+				"instructions": [
+					"You are the Comms agent for InnSight. Given a triaged case JSON, draft the guest reply. Rules: warm and direct, no corporate jargon, no emojis. Acknowledge the specific issue, state the action being taken. NEVER promise a compensation amount in the reply. Output the draft reply text."
+				],
+				"max_waves": 10,
+				"parameters": {}
+			},
+			"input": [
+				{
+					"lane": "questions",
+					"from": "triage_agent"
+				}
+			]
+		},
+		{
+			"id": "policy_agent",
+			"provider": "agent_rocketride",
+			"ui": {
+				"position": {
+					"x": 740,
+					"y": 200
+				},
+				"measured": {
+					"width": 150,
+					"height": 86
+				},
+				"nodeType": "default",
+				"formDataValid": true
+			},
+			"config": {
+				"instructions": [
+					"You are the Policy gate for InnSight. Given a drafted guest reply and its case JSON, check it against the hotel policy: (1) professional, empathetic, specific to the issue; (2) no compensation amounts promised; (3) health/safety issues must escalate to a human immediately; (4) no internal operations details disclosed; (5) warm direct tone, no emojis. If it passes, output APPROVED followed by the final reply. If it fails, output REJECTED with the violated rule numbers and a corrected reply."
+				],
+				"max_waves": 10,
+				"parameters": {}
+			},
+			"input": [
+				{
+					"lane": "questions",
+					"from": "comms_agent"
+				}
+			]
+		},
+		{
+			"id": "ledger_python",
+			"provider": "tool_python",
+			"ui": {
+				"position": {
+					"x": 740,
+					"y": 380
+				},
+				"measured": {
+					"width": 150,
+					"height": 40
+				},
+				"nodeType": "default",
+				"formDataValid": true
+			},
+			"config": {
+				"type": "tool_python"
+			},
+			"control": [
+				{
+					"classType": "tool",
+					"from": "policy_agent"
+				}
+			]
+		},
+		{
+			"id": "response_answers_1",
+			"provider": "response_answers",
+			"ui": {
+				"position": {
+					"x": 980,
+					"y": 200
+				},
+				"measured": {
+					"width": 150,
+					"height": 66
+				},
+				"nodeType": "default",
+				"formDataValid": true
+			},
+			"config": {
+				"laneName": "answers"
+			},
+			"input": [
+				{
+					"lane": "answers",
+					"from": "policy_agent"
+				}
+			]
+		},
+		{
+			"id": "llm_openai_1",
+			"provider": "llm_openai",
+			"ui": {
+				"position": {
+					"x": 260,
+					"y": 380
+				},
+				"measured": {
+					"width": 150,
+					"height": 66
+				},
+				"nodeType": "default",
+				"formDataValid": true
+			},
+			"config": {
+				"profile": "openai-4o",
+				"openai-4o": {
+					"apikey": "${ROCKETRIDE_OPENAI_KEY}"
+				},
+				"parameters": {}
+			},
+			"control": [
+				{
+					"classType": "llm",
+					"from": "triage_agent"
+				}
+			]
+		},
+		{
+			"id": "memory_internal_1",
+			"provider": "memory_internal",
+			"ui": {
+				"position": {
+					"x": 420,
+					"y": 380
+				},
+				"measured": {
+					"width": 150,
+					"height": 66
+				},
+				"nodeType": "default",
+				"formDataValid": true
+			},
+			"config": {
+				"type": "memory_internal"
+			},
+			"control": [
+				{
+					"classType": "memory",
+					"from": "triage_agent"
+				}
+			]
+		},
+		{
+			"id": "llm_openai_2",
+			"provider": "llm_openai",
+			"ui": {
+				"position": {
+					"x": 500,
+					"y": 380
+				},
+				"measured": {
+					"width": 150,
+					"height": 66
+				},
+				"nodeType": "default",
+				"formDataValid": true
+			},
+			"config": {
+				"profile": "openai-4o",
+				"openai-4o": {
+					"apikey": "${ROCKETRIDE_OPENAI_KEY}"
+				},
+				"parameters": {}
+			},
+			"control": [
+				{
+					"classType": "llm",
+					"from": "comms_agent"
+				}
+			]
+		}
+	],
+	"project_id": "3602ed4a-b8f3-4b10-8f2f-e43f6acb367b",
+	"viewport": {
+		"x": 0,
+		"y": 0,
+		"zoom": 1
+	},
+	"version": 1
+}

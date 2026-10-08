@@ -1,0 +1,5 @@
+adal/
+rocketride/
+.env
+__pycache__/
+*.pyc
