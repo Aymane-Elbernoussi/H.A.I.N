@@ -1,16 +1,15 @@
-"""H.A.I.N. BAND agents — run one per process.
+"""H.A.I.N. BAND agents — run one per process, powered by Gemini.
 
-Setup (per band-sdk-python quickstart):
-    pip install "band-sdk[langgraph]"
-    # Sign in at https://app.band.ai, create 4 remote agents
-    # (Triage, Comms, Ledger, Policy), export each UUID + API key:
+Setup:
+    pip install "band-sdk[gemini]"
+    # Agent UUIDs + API keys registered via BAND Human API (see .env):
     export TRIAGE_AGENT_ID=... TRIAGE_API_KEY=...
     export COMMS_AGENT_ID=...  COMMS_API_KEY=...
     export LEDGER_AGENT_ID=... LEDGER_API_KEY=...
     export POLICY_AGENT_ID=... POLICY_API_KEY=...
-    export OPENAI_API_KEY=...
+    export GEMINI_API_KEY=...   # or GOOGLE_API_KEY
 
-    python agents/triage_agent.py   # each file runs its own agent
+    HAIN_ROLE=triage python agents/band_agents.py   # one process per role
 
 Agents collaborate in a BAND room: Triage opens a case and @mentions Comms,
 Comms drafts and @mentions Policy, Policy approves/rejects, Ledger attaches
@@ -22,13 +21,12 @@ from __future__ import annotations
 import asyncio
 import os
 
-from langchain_openai import ChatOpenAI
-from langgraph.checkpoint.memory import InMemorySaver
-
 from band import Agent, configure_logging
-from band.adapters import LangGraphAdapter
+from band.adapters import GeminiAdapter, GeminiAdapterConfig
 
 configure_logging()
+
+MODEL = os.getenv("HAIN_GEMINI_MODEL", "gemini-2.5-flash")
 
 SYSTEM_PROMPTS = {
     "triage": (
@@ -68,12 +66,12 @@ SYSTEM_PROMPTS = {
 
 def make_agent(role: str) -> Agent:
     prefix = role.upper()
-    adapter = LangGraphAdapter(
-        llm=ChatOpenAI(
-            model=os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
+    adapter = GeminiAdapter(
+        GeminiAdapterConfig(
+            model=MODEL,
+            provider_key=os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY"),
             system_prompt=SYSTEM_PROMPTS[role],
-        ),
-        checkpointer=InMemorySaver(),
+        )
     )
     return Agent.create(
         adapter=adapter,
@@ -83,7 +81,7 @@ def make_agent(role: str) -> Agent:
 
 
 async def main() -> None:
-    role = os.environ.get("INNSIGHT_ROLE", "triage")
+    role = os.environ.get("HAIN_ROLE", "triage")
     agent = make_agent(role)
     await agent.run()
 
