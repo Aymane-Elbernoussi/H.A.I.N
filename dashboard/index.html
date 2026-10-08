@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>H.A.I.N. · Hotel Ops</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">H</span>
+      <div>
+        <div class="brand-name">H.A.I.N.</div>
+        <div class="brand-sub" id="hotel"></div>
+      </div>
+    </div>
+    <nav class="nav" aria-label="Sections">
+      <a href="#cases" class="active">Cases</a>
+      <a href="#ledger">Ledger</a>
+      <a href="#agents">Agents</a>
+    </nav>
+    <div class="clock"><span class="live-dot"></span><span id="clock"></span></div>
+  </header>
+
+  <main>
+    <section class="kpis" id="kpis" aria-label="Key figures"></section>
+
+    <section id="cases" class="panel">
+      <div class="panel-head">
+        <h2>Cases feed</h2>
+        <div class="filters" id="case-filters"></div>
+      </div>
+      <div class="table-wrap">
+        <table class="cases-table">
+          <thead><tr>
+            <th>Urgency</th><th>Case</th><th>Guest</th><th>Room</th><th>Category</th><th>Status</th><th class="num">Age</th>
+          </tr></thead>
+          <tbody id="case-rows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="ledger" class="panel">
+      <div class="panel-head">
+        <h2>Financial ledger</h2>
+        <div class="filters" id="ledger-filters"></div>
+      </div>
+      <div class="ledger-grid">
+        <div class="chart-card">
+          <div class="chart-title">Approved spend, last 7 days</div>
+          <div id="chart"></div>
+          <div class="legend">
+            <span><i class="sw refund"></i>Refund</span>
+            <span><i class="sw comp"></i>Comp</span>
+            <span><i class="sw loss"></i>Loss</span>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="ledger-table">
+            <thead><tr>
+              <th>Entry</th><th>Case</th><th>Type</th><th>Reason</th><th>Approval</th><th class="num">Amount</th>
+            </tr></thead>
+            <tbody id="ledger-rows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="agents" class="panel">
+      <div class="panel-head"><h2>Agent activity</h2><span class="muted">BAND room · 4 agents</span></div>
+      <div class="agent-cards" id="agent-cards"></div>
+      <div class="panel-head sub">
+        <h3>Activity stream</h3>
+        <div class="filters" id="agent-filters"></div>
+      </div>
+      <ol class="stream" id="stream"></ol>
+    </section>
+  </main>
+
+  <aside class="drawer" id="drawer" aria-hidden="true" role="dialog" aria-label="Case detail">
+    <div class="drawer-head">
+      <div id="drawer-title"></div>
+      <button class="icon-btn" id="drawer-close" aria-label="Close">&times;</button>
+    </div>
+    <div class="drawer-body" id="drawer-body"></div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
